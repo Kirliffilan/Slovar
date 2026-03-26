@@ -3,17 +3,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class DictionaryService {
-    private HashMap<String, String> dict = new HashMap<String, String>();
+    private final HashMap<String, String> _dict = new HashMap<String, String>();
     private String _fileName;
 
-    public void read(String fileName){
+    protected void read(String fileName){
         _fileName = fileName;
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split("-");
                 if (parts.length == 2) {
-                    dict.put(parts[0], parts[1]);
+                    _dict.put(parts[0], parts[1]);
                 }
             }
         } catch (IOException e) {
@@ -23,7 +23,7 @@ public abstract class DictionaryService {
 
     private void saveFile(){
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(_fileName))) {
-            for (Map.Entry<String, String> entry : dict.entrySet()) {
+            for (Map.Entry<String, String> entry : _dict.entrySet()) {
                 bw.write(entry.getKey() + "-" + entry.getValue());
                 bw.newLine();
             }
@@ -32,25 +32,39 @@ public abstract class DictionaryService {
         }
     }
 
-    public void delete(String key){
-        if (dict.containsKey(key)){
-            dict.remove(key);
+    public void delete(String key) throws Exception {
+        if (_dict.containsKey(key)){
+            _dict.remove(key);
             saveFile();
+        }
+        else{
+            throw new Exception("Нет такого слова.");
         }
     }
 
     public String find(String key){
-        return dict.getOrDefault(key, "Нет записей");
+        return _dict.getOrDefault(key, "Нет записей");
     }
 
     public void addWord(String key, String value) throws Exception {
         if (validate(key)){
-            dict.put(key, value);
+            _dict.put(key, value);
             saveFile();
         }
         else{
-            throw new Exception("Слово не соответствует требованиям");
+            throw new Exception("Слово не соответствует правилам языка!");
         }
     }
+
+    @Override
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, String> entry : _dict.entrySet()){
+            sb.append(entry.getKey() + " - " + entry.getValue() + "\n");
+        }
+        return sb.toString();
+    }
+
+    public abstract String getLangRules();
     protected abstract boolean validate(String key);
 }
