@@ -1,11 +1,11 @@
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
-
+/// Класс для работы со словарём
 public abstract class DictionaryService {
     private final HashMap<String, String> _dict = new HashMap<String, String>();
     private String _fileName;
-
+    /// Метод для чтения словаря с файла
     protected void read(String fileName){
         _fileName = fileName;
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
@@ -20,7 +20,7 @@ public abstract class DictionaryService {
             System.out.println("Файл не найден, создаем новый.");
         }
     }
-
+    /// Метод для сохранения словаря
     private void saveFile(){
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(_fileName))) {
             for (Map.Entry<String, String> entry : _dict.entrySet()) {
@@ -31,7 +31,7 @@ public abstract class DictionaryService {
             e.printStackTrace();
         }
     }
-
+    /// Метод для удаления слова из словаря
     public void delete(String key) throws Exception {
         if (_dict.containsKey(key)){
             _dict.remove(key);
@@ -41,11 +41,12 @@ public abstract class DictionaryService {
             throw new Exception("Нет такого слова.");
         }
     }
-
+    /// Метод для нахождения перевода слова в словаре
     public String find(String key){
         return _dict.getOrDefault(key, "Нет записей");
     }
 
+    ///  Метод для добавления новой записи в словарь
     public void addWord(String key, String value) throws Exception {
         if (validate(key)){
             _dict.put(key, value);
@@ -56,6 +57,7 @@ public abstract class DictionaryService {
         }
     }
 
+    /// Все слова в словаре (String)
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();
@@ -64,7 +66,8 @@ public abstract class DictionaryService {
         }
         return sb.toString();
     }
-
+    /// Правила языка (String)
     public abstract String getLangRules();
+    /// Метод для проверки валидности слова для языка
     protected abstract boolean validate(String key);
 }
