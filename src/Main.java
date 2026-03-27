@@ -14,6 +14,9 @@ void main() {
             System.out.println("Ошибка. Такого языка нет.");
             break;
     }
+    System.out.println("Введите имя файла: ");
+    String filename = sc.next();
+    ds.read(filename);
     if (ds != null) {
         while (true) {
             System.out.println("Что хотите сделать?\n" +
@@ -32,7 +35,12 @@ void main() {
                 case 2: {
                     System.out.println("Какое слово перевести?");
                     String key = sc.next();
-                    System.out.println(ds.find(key));
+                    try{
+                        System.out.println(ds.find(key));
+                    }
+                    catch(Exception e){
+                        System.out.println(e.getMessage());
+                    }
                     break;
                 }
                 case 3: {

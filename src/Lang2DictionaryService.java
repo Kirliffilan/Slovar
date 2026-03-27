@@ -1,8 +1,4 @@
 public class Lang2DictionaryService extends DictionaryService{
-    public Lang2DictionaryService(){
-        read("Lang2.txt");
-    }
-
     @Override
     public String getLangRules() {
         return "Только цифры, 5 символов";

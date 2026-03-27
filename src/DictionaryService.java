@@ -1,19 +1,20 @@
 import java.io.*;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 /// Класс для работы со словарём
 public abstract class DictionaryService {
-    private final HashMap<String, String> _dict = new HashMap<String, String>();
-    private String _fileName;
+    private final LinkedHashMap<String, String> dict = new LinkedHashMap<String, String>();
+
+    private String filename;
     /// Метод для чтения словаря с файла
-    protected void read(String fileName){
-        _fileName = fileName;
+    public void read(String fileName){
+        this.filename = fileName;
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split("-");
-                if (parts.length == 2) {
-                    _dict.put(parts[0], parts[1]);
+                if (parts.length == 2){
+                    dict.put(parts[0], parts[1]);
                 }
             }
         } catch (IOException e) {
@@ -22,8 +23,8 @@ public abstract class DictionaryService {
     }
     /// Метод для сохранения словаря
     private void saveFile(){
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(_fileName))) {
-            for (Map.Entry<String, String> entry : _dict.entrySet()) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
+            for (Map.Entry<String, String> entry : dict.entrySet()) {
                 bw.write(entry.getKey() + "-" + entry.getValue());
                 bw.newLine();
             }
@@ -33,8 +34,8 @@ public abstract class DictionaryService {
     }
     /// Метод для удаления слова из словаря
     public void delete(String key) throws Exception {
-        if (_dict.containsKey(key)){
-            _dict.remove(key);
+        if (validate(key) && dict.containsKey(key)){
+            dict.remove(key);
             saveFile();
         }
         else{
@@ -42,14 +43,16 @@ public abstract class DictionaryService {
         }
     }
     /// Метод для нахождения перевода слова в словаре
-    public String find(String key){
-        return _dict.getOrDefault(key, "Нет записей");
+    public String find(String key) throws Exception {
+        if (validate(key))
+            return dict.getOrDefault(key, "Нет записей");
+        else throw new Exception("Слово не соответсвует правилам языка!");
     }
 
     ///  Метод для добавления новой записи в словарь
     public void addWord(String key, String value) throws Exception {
         if (validate(key)){
-            _dict.put(key, value);
+            dict.put(key, value);
             saveFile();
         }
         else{
@@ -61,8 +64,9 @@ public abstract class DictionaryService {
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<String, String> entry : _dict.entrySet()){
-            sb.append(entry.getKey() + " - " + entry.getValue() + "\n");
+        for (Map.Entry<String, String> entry : dict.entrySet()){
+            if (validate(entry.getKey()))
+                sb.append(entry.getKey() + " - " + entry.getValue() + "\n");
         }
         return sb.toString();
     }

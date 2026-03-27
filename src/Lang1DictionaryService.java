@@ -1,8 +1,4 @@
 public class Lang1DictionaryService extends DictionaryService{
-    public Lang1DictionaryService(){
-        read("Lang1.txt");
-    }
-
     @Override
     public String getLangRules() {
         return "Только латинские буквы, 4 символа.";
